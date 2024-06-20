@@ -73,7 +73,7 @@ spec:
             "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
             inlineCode: |
               function envoy_on_response(response_handle)
-                response_handle:logInfo("12345")
+                response_handle:logWarn("12345")
                 if response_handle:headers():get(":status") == "429" then
                   response_handle:headers():replace(":status", "302")
                 end
