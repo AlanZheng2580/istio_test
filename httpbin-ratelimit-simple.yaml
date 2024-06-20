@@ -54,7 +54,7 @@ spec:
                     value: "api"
                   token_bucket:
                     max_tokens: 1
-                    tokens_per_file: 1
+                    tokens_per_fill: 1
                     fill_interval: 10s
     - applyTo: HTTP_FILTER
       match:
