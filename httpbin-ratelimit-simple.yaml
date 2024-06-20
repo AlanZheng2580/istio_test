@@ -42,13 +42,12 @@ spec:
                   header:
                     key: x-rate-limited
                     value: TOO_MANY_REQUESTS
-              status:
-                code: 429
-              response_headers_to_add:
-                - append: false
+                - append_action: APPEND_IF_EXISTS_OR_ADD
                   header:
                     key: location
                     value: 'http://www.tsmc.com'
+              status:
+                code: 429
     - applyTo: HTTP_FILTER
       match:
         context: SIDECAR_INBOUND
