@@ -54,7 +54,7 @@ spec:
                     value: "api"
                   token_bucket:
                     max_tokens: 1
-                    tokens_per_file: 1
+                    tokens_per_fill: 1
                     fill_interval: 10s
     - applyTo: HTTP_FILTER
       match:
@@ -66,16 +66,31 @@ spec:
               subFilter:
                 name: "envoy.filters.http.router"
       patch:
-        operation: INSERT_BEFORE
+        operation: INSERT_FIRST
         value:
           name: envoy.filters.http.lua
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
             inlineCode: |
+              function envoy_on_request(request_handle)
+                request_handle:logWarn("request")
+                local path = request_handle:headers():get(":path")
+                request_handle:logWarn("path:" .. path )
+                if string.find(path, "^/get/") then 
+                  request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 1)
+                else
+                  request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 0)
+                end
+              end
+
               function envoy_on_response(response_handle)
-                response_handle:logInfo("12345")
-                if response_handle:headers():get(":status") == "429" then
-                  response_handle:headers():replace(":status", "302")
+                response_handle:logWarn("response")
+                local isApi = response_handle:streamInfo():dynamicMetadata():get("path_info")["api"]
+                response_handle:logWarn("isApi:" .. isApi)
+                if isApi == 0 then
+                  if response_handle:headers():get(":status") == "429" then
+                    response_handle:headers():replace(":status", "302")
+                  end
                 end
               end
     - applyTo: HTTP_ROUTE
