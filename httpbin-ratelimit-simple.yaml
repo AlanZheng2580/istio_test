@@ -72,8 +72,12 @@ spec:
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
             inlineCode: |
+              function envoy_on_request(request_handle)
+                request_handle:logWarn("request")
+              end
+
               function envoy_on_response(response_handle)
-                response_handle:logWarn("12345")
+                response_handle:logWarn("response")
                 if response_handle:headers():get(":status") == "429" then
                   response_handle:headers():replace(":status", "302")
                 end
