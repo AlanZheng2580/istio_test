@@ -66,7 +66,7 @@ spec:
               subFilter:
                 name: "envoy.filters.http.router"
       patch:
-        operation: INSERT_BEFORE
+        operation: INSERT_FIRST
         value:
           name: envoy.filters.http.lua
           typed_config:
@@ -74,12 +74,23 @@ spec:
             inlineCode: |
               function envoy_on_request(request_handle)
                 request_handle:logWarn("request")
+                local path = request_handle:headers():get(":path")
+                request_handle:logWarn("path:" .. path )
+                if string.find(path, "^/get/") then 
+                  request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 1)
+                else
+                  request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 0)
+                end
               end
 
               function envoy_on_response(response_handle)
                 response_handle:logWarn("response")
-                if response_handle:headers():get(":status") == "429" then
-                  response_handle:headers():replace(":status", "302")
+                local isApi = response_handle:streamInfo():dynamicMetadata():get("path_info")["api"]
+                response_handle:logWarn("isApi:" .. isApi)
+                if isApi == 0 then
+                  if response_handle:headers():get(":status") == "429" then
+                    response_handle:headers():replace(":status", "302")
+                  end
                 end
               end
     - applyTo: HTTP_ROUTE
