@@ -1,1 +1,1 @@
-for i in {1..30}; do date ; curl -s http://192.168.49.2:32752 -o /dev/null -w %{http_code}n; sleep 1; done
+for i in {1..30}; do date ; curl -s http://192.168.49.2:32752 -o /dev/null -w "%{http_code}\n"; sleep 1; done
