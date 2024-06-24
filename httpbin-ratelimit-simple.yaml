@@ -45,7 +45,7 @@ spec:
                 - append_action: APPEND_IF_EXISTS_OR_ADD
                   header:
                     key: location
-                    value: 'http://www.tsmc.com'
+                    value: 'https://istio.com'
               status:
                 code: 429
               descriptors:
@@ -76,7 +76,7 @@ spec:
                 request_handle:logWarn("request")
                 local path = request_handle:headers():get(":path")
                 request_handle:logWarn("path:" .. path )
-                if string.find(path, "^/get/") then 
+                if string.find(path, "^/get") then 
                   request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 1)
                 else
                   request_handle:streamInfo():dynamicMetadata():set("path_info", "api", 0)
@@ -112,4 +112,4 @@ spec:
                       - name: ":path"
                         safe_regex_match:
                           google_re2: {}
-                          regex: "/get/.*"
+                          regex: "/get.*"
