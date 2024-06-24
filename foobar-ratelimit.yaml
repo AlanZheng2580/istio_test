@@ -1,11 +1,11 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
-  name: httpbin-ratelimit
+  name: foobar-ratelimit
 spec:
   workloadSelector:
     labels:
-      app: httpbin
+      app: foobar
   configPatches:
     - applyTo: HTTP_FILTER
       match:
