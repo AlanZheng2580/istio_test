@@ -108,8 +108,7 @@ spec:
                 - header_value_match:
                     descriptor_key: "path"
                     descriptor_value: "api"
+                    expect_match: true
                     headers:
                       - name: ":path"
-                        safe_regex_match:
-                          google_re2: {}
-                          regex: "/api.*"
+                        prefix_match: "/api"
